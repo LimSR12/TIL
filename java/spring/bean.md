@@ -34,6 +34,7 @@ Spring Bean 이란 **스프링 컨테이너(IoC Container)가 생성하고 관�
 ```java
 @Service
 public class UserService {
+
 }
 ```
 
@@ -71,6 +72,7 @@ Bean 은 생성/공유 범위를 가질 수 있다.
 @Scope("prototype")
 @Component
 public class TempTask {
+
 }
 ```
 
