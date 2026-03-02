@@ -44,8 +44,6 @@ DDD는 모든 프로젝트에 적용하는 만능 해법은 아니다.
 
 테스트 중심의 TDD, 행위 중심의 BDD와 같은 다양한 디자인 방식이 있다.
 
-![](https://github.com/user-attachments/assets/f3019dae-49f5-4ccd-b6da-62eadd398eda)
-
 ### 🔹 사용하기 좋은 경우
 
 - 비즈니스 로직이 복잡한 경우
@@ -160,3 +158,7 @@ ProjectTechStack을 별도로 추가/삭제하지 않는다.
 # 7️⃣ 참고 자료
 
 - [[Backend] ㄷㄷㄷ: Domain Driven Design과 적용 사례공유 / if(kakao)dev2022](https://www.youtube.com/watch?v=s0twDQ6lIGU)
+
+<img width="60%" alt="Image" src="https://github.com/user-attachments/assets/f3019dae-49f5-4ccd-b6da-62eadd398eda" />
+<img width="60%" alt="Image" src="https://github.com/user-attachments/assets/bc09068f-b2bc-401b-9164-e608808ac699" />
+<img width="60%" alt="Image" src="https://github.com/user-attachments/assets/a857ba3b-6159-46a6-a18e-7299c9d1cc09" />
