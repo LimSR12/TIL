@@ -21,47 +21,11 @@ jobs:
       - name: Build sync payload
         id: payload
         run: |
-          # 한글 파일명이 escape되지 않도록 설정
-          git config core.quotePath false
-
-          # 수동 실행(full_sync) 또는 push 이벤트 분기
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.full_sync }}" == "true" ]]; then
-            echo "▶ Full sync mode"
-            changed=$(git ls-tree -r HEAD --name-only -- '*.md')
-          else
-            BEFORE="${{ github.event.before }}"
-            AFTER="${{ github.event.after }}"
-
-            if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
-              changed=$(git ls-tree -r --name-only "$AFTER" -- '*.md')
-            else
-              changed=$(git diff --name-only --diff-filter=AM "$BEFORE" "$AFTER" -- '*.md')
-            fi
-          fi
-
-          if [ -z "$changed" ]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # .nosync, .github 등 메타 디렉토리 제외
-          changed=$(echo "$changed" | grep -v -E '^\.(nosync|github)/')
-
-          if [ -z "$changed" ]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "$changed" | while IFS= read -r file; do
-            [ -z "$file" ] && continue
-            created_at=$(git log --diff-filter=A --follow --format="%aI" -- "$file" | tail -1)
-            updated_at=$(git log -1 --format="%aI" -- "$file")
-            jq -n --arg path "$file" \
-                  --rawfile content "$file" \
-                  --arg createdAt "$created_at" \
-                  --arg updatedAt "$updated_at" \
-              '{ path: $path, content: $content, createdAt: $createdAt, updatedAt: $updatedAt }'
-          done | jq -s '{ files: . }' > /tmp/sync-payload.json
+          bash .github/scripts/build-sync-payload.sh \
+            "${{ github.event_name }}" \
+            "${{ inputs.full_sync }}" \
+            "${{ github.event.before }}" \
+            "${{ github.event.after }}"
 
       - name: Sync to blog server
         if: steps.payload.outputs.skip != 'true'
