@@ -44,6 +44,14 @@ jobs:
             exit 0
           fi
 
+          # .nosync, .github 등 메타 디렉토리 제외
+          changed=$(echo "$changed" | grep -v -E '^\.(nosync|github)/')
+
+          if [ -z "$changed" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           echo "$changed" | while IFS= read -r file; do
             [ -z "$file" ] && continue
             created_at=$(git log --diff-filter=A --follow --format="%aI" -- "$file" | tail -1)
@@ -58,7 +66,7 @@ jobs:
       - name: Sync to blog server
         if: steps.payload.outputs.skip != 'true'
         run: |
-          curl -X POST "${{ secrets.BLOG_API_URL }}/api/til/sync" \
+          curl -X POST "${{ secrets.BLOG_API_URL }}/api/v1/til/sync" \
             -H "Content-Type: application/json" \
             -H "X-Sync-Secret: ${{ secrets.TIL_SYNC_SECRET }}" \
             -d @/tmp/sync-payload.json \
