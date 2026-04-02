@@ -15,16 +15,9 @@ jobs:
       - name: Build sync payload
         id: payload
         run: |
-          # 해당 파일이 처음 추가된 커밋의 author date
-          created_at=$(git log --diff-filter=A --follow --format="%aI" -- "$file" | tail -1)
-
-          # 해당 파일의 가장 최근 커밋 author date
-          updated_at=$(git log -1 --format="%aI" -- "$file")
-
           BEFORE="${{ github.event.before }}"
           AFTER="${{ github.event.after }}"
 
-          # 최초 push fallback (before가 zero SHA인 경우)
           if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
             changed=$(git ls-tree -r --name-only "$AFTER" -- '*.md')
           else
@@ -36,13 +29,15 @@ jobs:
             exit 0
           fi
 
-          # JSON 배열 생성 → 파일로 저장
           echo "$changed" | while IFS= read -r file; do
             [ -z "$file" ] && continue
             created_at=$(git log --diff-filter=A --follow --format="%aI" -- "$file" | tail -1)
             updated_at=$(git log -1 --format="%aI" -- "$file")
-            jq -n --arg path "$file" --rawfile content "$file" \
-              '{ path: $path, content: $content }'
+            jq -n --arg path "$file" \
+                  --rawfile content "$file" \
+                  --arg createdAt "$created_at" \
+                  --arg updatedAt "$updated_at" \
+              '{ path: $path, content: $content, createdAt: $createdAt, updatedAt: $updatedAt }'
           done | jq -s '{ files: . }' > /tmp/sync-payload.json
 
       - name: Sync to blog server
