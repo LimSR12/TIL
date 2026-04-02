@@ -3,6 +3,12 @@ name: TIL Sync
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      full_sync:
+        description: "전체 .md 파일 동기화"
+        type: boolean
+        default: true
 
 jobs:
   sync:
@@ -10,18 +16,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # before 커밋까지 포함하려면 전체 히스토리 필요
+          fetch-depth: 0
 
       - name: Build sync payload
         id: payload
         run: |
-          BEFORE="${{ github.event.before }}"
-          AFTER="${{ github.event.after }}"
+          # 한글 파일명이 escape되지 않도록 설정
+          git config core.quotePath false
 
-          if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
-            changed=$(git ls-tree -r --name-only "$AFTER" -- '*.md')
+          # 수동 실행(full_sync) 또는 push 이벤트 분기
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.full_sync }}" == "true" ]]; then
+            echo "▶ Full sync mode"
+            changed=$(git ls-tree -r HEAD --name-only -- '*.md')
           else
-            changed=$(git diff --name-only --diff-filter=AM "$BEFORE" "$AFTER" -- '*.md')
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.event.after }}"
+
+            if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
+              changed=$(git ls-tree -r --name-only "$AFTER" -- '*.md')
+            else
+              changed=$(git diff --name-only --diff-filter=AM "$BEFORE" "$AFTER" -- '*.md')
+            fi
           fi
 
           if [ -z "$changed" ]; then
