@@ -21,11 +21,69 @@ jobs:
       - name: Build sync payload
         id: payload
         run: |
-          bash .github/scripts/build-sync-payload.sh \
-            "${{ github.event_name }}" \
-            "${{ inputs.full_sync }}" \
-            "${{ github.event.before }}" \
-            "${{ github.event.after }}"
+          set -eo pipefail
+
+          git config core.quotePath false
+
+          # ── 1. 변경된 .md 파일 목록 수집 ──
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.full_sync }}" == "true" ]]; then
+            echo "▶ Full sync mode"
+            changed=$(git ls-tree -r --name-only HEAD | grep -E '\.md$' || true)
+          else
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.event.after }}"
+
+            if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
+              changed=$(git ls-tree -r --name-only "$AFTER" -- '*.md')
+            else
+              changed=$(git diff --name-only --diff-filter=AM "$BEFORE" "$AFTER" -- '*.md')
+            fi
+          fi
+
+          echo "::group::수집된 파일 목록 (필터 전)"
+          echo "${changed:-<없음>}"
+          echo "::endgroup::"
+
+          # ── 2. 메타 디렉토리 제외 ──
+          changed=$(echo "$changed" | grep -v -E '^\.(nosync|github)/' || true)
+
+          echo "::group::필터 후 파일 목록"
+          echo "${changed:-<없음>}"
+          echo "::endgroup::"
+
+          if [ -z "$changed" ]; then
+            echo "⏭ 동기화할 .md 파일 없음 — skip"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # ── 3. JSON payload 생성 ──
+          echo "$changed" | while IFS= read -r file; do
+            [ -z "$file" ] && continue
+
+            if [ ! -f "$file" ]; then
+              echo "⚠ 파일 없음, 건너뜀: $file" >&2
+              continue
+            fi
+
+            created_at=$(git log --diff-filter=A --follow --format="%aI" -- "$file" | tail -1)
+            updated_at=$(git log -1 --format="%aI" -- "$file")
+            created_at="${created_at:-$updated_at}"
+
+            jq -n --arg path "$file" \
+                  --rawfile content "$file" \
+                  --arg createdAt "$created_at" \
+                  --arg updatedAt "$updated_at" \
+              '{ path: $path, content: $content, createdAt: $createdAt, updatedAt: $updatedAt }'
+          done | jq -s '{ files: . }' > /tmp/sync-payload.json
+
+          file_count=$(jq '.files | length' /tmp/sync-payload.json)
+          echo "✅ payload 생성 완료: ${file_count}개 파일"
+
+          if [ "$file_count" -eq 0 ]; then
+            echo "⏭ payload에 파일이 0개 — skip"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Sync to blog server
         if: steps.payload.outputs.skip != 'true'
