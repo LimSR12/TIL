@@ -1,0 +1,47 @@
+name: TIL Sync
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # before 커밋까지 포함하려면 전체 히스토리 필요
+
+      - name: Build sync payload
+        id: payload
+        run: |
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.event.after }}"
+
+          # 최초 push fallback (before가 zero SHA인 경우)
+          if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
+            changed=$(git ls-tree -r --name-only "$AFTER" -- '*.md')
+          else
+            changed=$(git diff --name-only --diff-filter=AM "$BEFORE" "$AFTER" -- '*.md')
+          fi
+
+          if [ -z "$changed" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # JSON 배열 생성 → 파일로 저장
+          echo "$changed" | while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            jq -n --arg path "$file" --rawfile content "$file" \
+              '{ path: $path, content: $content }'
+          done | jq -s '{ files: . }' > /tmp/sync-payload.json
+
+      - name: Sync to blog server
+        if: steps.payload.outputs.skip != 'true'
+        run: |
+          curl -X POST "${{ secrets.BLOG_API_URL }}/api/til/sync" \
+            -H "Content-Type: application/json" \
+            -H "X-Sync-Secret: ${{ secrets.TIL_SYNC_SECRET }}" \
+            -d @/tmp/sync-payload.json \
+            --fail --silent --show-error
