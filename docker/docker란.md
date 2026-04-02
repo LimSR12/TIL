@@ -1,3 +1,7 @@
+---
+summary: Docker 기본 개념과 등장 배경, 특징 알아보기
+---
+
 # 🐳 Docker란 무엇인가
 
 ## 1. Docker의 정의
