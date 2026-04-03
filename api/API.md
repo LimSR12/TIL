@@ -1,6 +1,6 @@
 ---
-title:
-summary:
+title: "API 란"
+summary: "API의 주요 특징(추상화, 표준화, 모듈성)과 REST, SOAP, GraphQL, gRPC 등 API 종류 개요"
 status: draft
 ---
 

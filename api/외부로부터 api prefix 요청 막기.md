@@ -1,6 +1,6 @@
 ---
-title:
-summary: 외부로부터 /api/ prefix 요청 막는 방법 - 클로드에게 물어보기
+title: "[CLAUDE] Nginx에서 외부 /api/ 요청 차단 가능 여부에 대한 질의응답"
+summary: "컨테이너 간 내부 통신 구조와 /api/ 외부 노출 차단 가능 여부"
 status: publish
 ---
 
