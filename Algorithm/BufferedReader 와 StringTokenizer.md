@@ -1,3 +1,9 @@
+---
+title: "Java 입력 정리 (BufferedReader vs StringTokenizer)"
+summary: "Java 코딩테스트에서는 입력을 거의 항상 **BufferedReader**로 받는다."
+status: publish
+---
+
 # Java 입력 정리 (BufferedReader vs StringTokenizer)
 
 ## 1️⃣ BufferedReader는 항상 기본 베이스
