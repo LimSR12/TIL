@@ -73,15 +73,28 @@ jobs:
               continue
             fi
 
+            # frontmatter 필드 추출
+            fm_status=$(sed -n '/^---$/,/^---$/{ s/^status:[[:space:]]*//p }' "$file")
+            fm_title=$(sed -n '/^---$/,/^---$/{ s/^title:[[:space:]]*//p }' "$file")
+            fm_summary=$(sed -n '/^---$/,/^---$/{ s/^summary:[[:space:]]*//p }' "$file")
+
+            # draft이면 건너뜀
+            if [ "$fm_status" = "draft" ]; then
+              echo "⏭ draft 상태, 건너뜀: $file" >&2
+              continue
+            fi
+
             created_at=$(git log --diff-filter=A --follow --format="%aI" -- "$file" | tail -1)
             updated_at=$(git log -1 --format="%aI" -- "$file")
             created_at="${created_at:-$updated_at}"
 
             jq -n --arg path "$file" \
+                  --arg title "$fm_title" \
+                  --arg summary "$fm_summary" \
                   --rawfile content "$file" \
                   --arg createdAt "$created_at" \
                   --arg updatedAt "$updated_at" \
-              '{ path: $path, content: $content, createdAt: $createdAt, updatedAt: $updatedAt }'
+              '{ path: $path, title: (if $title == "" then null else $title end), summary: (if $summary == "" then null else $summary end), content: $content, createdAt: $createdAt, updatedAt: $updatedAt }'
           done | jq -s '{ files: . }' > /tmp/sync-payload.json
 
           file_count=$(jq '.files | length' /tmp/sync-payload.json)
