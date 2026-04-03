@@ -1,3 +1,8 @@
+---
+summary: OpenAPI가 뭐죠?
+status: draft
+---
+
 # 학습 배경
 
 지난 모의면접에서 이런 질문을 받았었다.

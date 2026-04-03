@@ -1,3 +1,8 @@
+---
+summary: 외부로부터 /api/ prefix 요청 막는 방법 - 클로드에게 물어보기
+status: publish
+---
+
 # 질문
 
 Next 에서 사용자가 브라우저 주소창에 /api/ 로 접속을 시도하면 막는 방법이 있겠으나, 이렇게 하면 postman 이나 curl 등을 통해 직접 http 요청을 날릴 경우를 막을 수 없을거야.
