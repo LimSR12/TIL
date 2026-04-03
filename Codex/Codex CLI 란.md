@@ -1,3 +1,9 @@
+---
+title: "Codex CLI란?"
+summary: "OpenAI의 로컬 터미널 코딩 에이전트 Codex CLI의 개요와 설치, 실행 방법"
+status: publish
+---
+
 # Codex CLI 란
 
 Codex CLI is OpenAI’s coding agent that you can run locally from your terminal. It can read, change, and run code on your machine in the selected directory. It’s open source and built in Rust for speed and efficiency.
