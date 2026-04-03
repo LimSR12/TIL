@@ -1,5 +1,7 @@
 ---
+title: "🐳 Docker란 무엇인가"
 summary: Docker 기본 개념과 등장 배경, 특징 알아보기
+status: publish
 ---
 
 # 🐳 Docker란 무엇인가
