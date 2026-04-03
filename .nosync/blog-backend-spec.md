@@ -125,6 +125,8 @@ TIL 레포에서 main에 push하면 GitHub Actions가 이 엔드포인트를 호
   "files": [
     {
       "path": "Java/Spring/AOP.md",
+      "title": "AOP로 횡단 관심사 분리하기",
+      "summary": "Spring AOP의 개념과 적용 방법 정리",
       "content": "# AOP 개념 정리\n\n본문...",
       "createdAt": "2026-03-15T10:30:00",
       "updatedAt": "2026-04-01T14:20:00"
@@ -134,6 +136,8 @@ TIL 레포에서 main에 push하면 GitHub Actions가 이 엔드포인트를 호
 ```
 
 - `path`: TIL 레포 루트 기준 상대 경로
+- `title`: frontmatter의 `title` 값. 없으면 `null`
+- `summary`: frontmatter의 `summary` 값. 없으면 `null`
 - `content`: 마크다운 원문
 - `createdAt`: 파일의 최초 git 커밋 시각 (ISO 8601, UTC)
 - `updatedAt`: 파일의 마지막 git 커밋 시각 (ISO 8601, UTC)
@@ -155,14 +159,15 @@ TIL 레포에서 main에 push하면 GitHub Actions가 이 엔드포인트를 호
 ### 서버 처리 로직
 
 1. **루트 파일 필터링**: `/`가 없거나 `.md`가 아닌 파일은 skip (예: `README.md` → skip)
-2. **title**: 파일명에서 `.md` 제거 (예: `AOP.md` → `AOP`)
+2. **title**: 요청 JSON의 `title` 필드 사용. `null`이면 파일명에서 `.md` 제거하여 fallback (예: `AOP.md` → `AOP`)
 3. **slug**: 경로 전체를 `-`로 연결, 소문자 (예: `Java/Spring/AOP.md` → `java-spring-aop`)
 4. **tags**: 디렉토리 세그먼트를 태그 이름으로 사용 (예: `Java/Spring/AOP.md` → `Java`, `Spring`). `images`, `assets` 디렉토리는 제외. 없는 태그는 자동 생성
 5. **이미지 URL 변환**: 마크다운 내 상대 경로 이미지를 `https://raw.githubusercontent.com/LimSR12/TIL/main/` 기준 절대 URL로 변환. `http://`, `https://`로 시작하는 절대 URL은 그대로 유지
 6. **upsert**: `source_path` 기준으로 기존 글이 있으면 update, 없으면 insert
 7. **slug 충돌 방지**: insert 시 slug가 이미 존재하면 뒤에 타임스탬프 추가
 8. **status**: TIL sync로 생성된 글은 `PUBLISHED` 상태, `category`는 `null`
-9. **타임스탬프**: `createdAt`은 `posts.created_at`과 `published_at`에 저장, `updatedAt`은 `posts.updated_at`에 저장. 기존 글 update 시에는 `updatedAt`만 갱신
+9. **summary**: 요청 JSON의 `summary` 필드를 `posts.summary`에 저장. `null`이면 `null` 유지
+10. **타임스탬프**: `createdAt`은 `posts.created_at`과 `published_at`에 저장, `updatedAt`은 `posts.updated_at`에 저장. 기존 글 update 시에는 `updatedAt`만 갱신
 
 ### GitHub Actions Secrets (TIL 레포에 등록)
 
@@ -180,17 +185,19 @@ TIL/
 ├── README.md                    → skip (루트 파일)
 ├── Java/
 │   └── Spring/
-│       └── AOP.md               → post: title="AOP", slug="java-spring-aop",
-│                                   tags=["Java","Spring"], source_path="Java/Spring/AOP.md"
+│       └── AOP.md               → post: title=frontmatter title (fallback: "AOP"),
+│                                   slug="java-spring-aop", tags=["Java","Spring"],
+│                                   source_path="Java/Spring/AOP.md"
 ├── DevOps/
-│   └── Docker기초.md            → post: title="Docker기초", slug="devops-docker기초",
-│                                   tags=["DevOps"], source_path="DevOps/Docker기초.md"
+│   └── Docker기초.md            → post: title=frontmatter title (fallback: "Docker기초"),
+│                                   slug="devops-docker기초", tags=["DevOps"],
+│                                   source_path="DevOps/Docker기초.md"
 └── images/                      → 태그에서 제외되는 디렉토리
 ```
 
 ### 주의사항
 
-- 파일명이 곧 글 제목이므로 한글/영문 모두 가능하되 명확하게 작성
+- 글 제목은 frontmatter `title`을 우선 사용하며, 없으면 파일명을 fallback으로 사용
 - 디렉토리명이 곧 태그이므로 일관된 네이밍 유지 (예: `Java` vs `java` 혼용 시 별도 태그 생성됨)
 - 같은 `source_path`로 재push하면 기존 글이 업데이트됨 (파일 이동 시 새 글로 생성됨)
-- summary와 category는 TIL sync에서 설정하지 않음 (null). 필요하면 블로그 관리 API로 별도 수정
+- summary는 frontmatter에서 전달. category는 TIL sync에서 설정하지 않음 (null). 필요하면 블로그 관리 API로 별도 수정
