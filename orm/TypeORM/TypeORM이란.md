@@ -1,3 +1,9 @@
+---
+title: "ORM 이란?"
+summary: "ORM이란 무엇인지, 왜 쓰는지 알아보기"
+status: publish
+---
+
 # ORM 이란?
 
 **ORM(Object Relational Mapping)** 은 객체(Object, 즉 JS 클래스)와 데이터베이스(Relational DB, 즉 테이블)를 자동으로 매핑시켜주는 기술이다!
