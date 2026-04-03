@@ -1,3 +1,9 @@
+---
+title: AWS IAM으로 서브 계정 만들어 안전하게 운영하기
+summary: 루트 계정 대신 IAM 서브 계정을 생성하고 그룹 기반 권한을 부여하는 방법
+status: publish
+---
+
 # IAM이란?
 
 # 왜 알아야 하는가?
