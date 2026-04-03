@@ -1,3 +1,9 @@
+---
+title: "Java 버전 변천사 및 Spring Boot 버전 선택 가이드"
+summary: ""
+status: publish
+---
+
 # Java 버전 변천사 및 Spring Boot 버전 선택 가이드
 
 ## Java 버전 개요

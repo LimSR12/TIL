@@ -1,3 +1,9 @@
+---
+title: "Spring Framework` 와 `Spring Boot` 는 뭐가 다른거지?"
+summary: "비교 분석하기!"
+status: publish
+---
+
 # `Spring Framework` 와 `Spring Boot` 는 뭐가 다른거지?
 
 > `Spring Boot` ⊂ `Spring Framework`

@@ -1,3 +1,9 @@
+---
+title: "IoC / DI 개념 정리"
+summary: "간단한 예시로 학습해보는 IoC 와 DI
+status: publish
+---
+
 # IoC / DI 개념 정리
 
 ## 1. IoC (Inversion of Control, 제어의 역전)

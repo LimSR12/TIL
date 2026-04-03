@@ -1,3 +1,9 @@
+---
+title: "Spring Boot에서 .env 파일은 언제 쓰나?"
+summary: "Spring Boot 표준 생태계에서 .env를 잘 사용하지 않는 이유, OS 환경 변수 등 대안 방법 정리"
+status: publish
+---
+
 # Spring Boot에서 .env 파일은 언제 쓰나?
 
 결론부터

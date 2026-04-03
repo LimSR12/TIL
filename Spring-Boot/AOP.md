@@ -1,3 +1,9 @@
+---
+title: "AOP (Aspect-Oriented Programming, 관점 지향 프로그래밍)"
+summary: "여러 곳에 반복되는 공통 관심사를 한 곳에 모아서 관리하는 프로그래밍 기법"
+status: publish
+---
+
 # AOP (Aspect-Oriented Programming, 관점 지향 프로그래밍)
 
 ## 1. AOP란?

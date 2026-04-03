@@ -1,3 +1,9 @@
+---
+title: "Spring Bean"
+summary: "Spring Bean 이란 스프링 컨테이너(IoC Container)가 생성하고 관리하는 객체를 말한다."
+status: publish
+---
+
 # Spring Bean
 
 ## Spring Bean 이란?
