@@ -66,6 +66,13 @@ jobs:
               continue
             fi
 
+            # frontmatter 제외 후 실제 본문이 비어있으면 건너뜀
+            body=$(sed '/^---$/,/^---$/d' "$file" | tr -d '[:space:]')
+            if [ -z "$body" ]; then
+              echo "⏭ 본문 없음, 건너뜀: $file" >&2
+              continue
+            fi
+
             created_at=$(git log --diff-filter=A --follow --format="%aI" -- "$file" | tail -1)
             updated_at=$(git log -1 --format="%aI" -- "$file")
             created_at="${created_at:-$updated_at}"
