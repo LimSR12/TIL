@@ -1,4 +1,5 @@
 ---
+title:
 summary: 외부로부터 /api/ prefix 요청 막는 방법 - 클로드에게 물어보기
 status: publish
 ---

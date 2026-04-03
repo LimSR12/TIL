@@ -1,5 +1,6 @@
 ---
-summary: OpenAPI가 뭐죠?
+title:
+summary:
 status: draft
 ---
 
