@@ -79,10 +79,10 @@ jobs:
             fm_summary=$(sed -n '/^---$/,/^---$/{ s/^summary:[[:space:]]*//p }' "$file")
 
             # draft이면 건너뜀
-            if [ "$fm_status" = "draft" ]; then
-              echo "⏭ draft 상태, 건너뜀: $file" >&2
-              continue
-            fi
+            # if [ "$fm_status" = "draft" ]; then
+            #   echo "⏭ draft 상태, 건너뜀: $file" >&2
+            #   continue
+            # fi
 
             created_at=$(git log --diff-filter=A --follow --format="%aI" -- "$file" | tail -1)
             updated_at=$(git log -1 --format="%aI" -- "$file")

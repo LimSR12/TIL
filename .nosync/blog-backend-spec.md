@@ -161,7 +161,7 @@ TIL 레포에서 main에 push하면 GitHub Actions가 이 엔드포인트를 호
 1. **루트 파일 필터링**: `/`가 없거나 `.md`가 아닌 파일은 skip (예: `README.md` → skip)
 2. **title**: 요청 JSON의 `title` 필드 사용. `null`이면 파일명에서 `.md` 제거하여 fallback (예: `AOP.md` → `AOP`)
 3. **slug**: 경로 전체를 `-`로 연결, 소문자 (예: `Java/Spring/AOP.md` → `java-spring-aop`)
-4. **tags**: 디렉토리 세그먼트를 태그 이름으로 사용 (예: `Java/Spring/AOP.md` → `Java`, `Spring`). `images`, `assets` 디렉토리는 제외. 없는 태그는 자동 생성
+4. **tags**: 디렉토리 세그먼트를 태그 이름으로 사용 (예: `Java/Spring/AOP.md` → `Java`, `Spring`). `images`, `assets` 디렉토리는 제외. 없는 태그는 자동 생성, frontmatter 로 제공한 커스텀 태그 추가
 5. **이미지 URL 변환**: 마크다운 내 상대 경로 이미지를 `https://raw.githubusercontent.com/LimSR12/TIL/main/` 기준 절대 URL로 변환. `http://`, `https://`로 시작하는 절대 URL은 그대로 유지
 6. **upsert**: `source_path` 기준으로 기존 글이 있으면 update, 없으면 insert
 7. **slug 충돌 방지**: insert 시 slug가 이미 존재하면 뒤에 타임스탬프 추가
