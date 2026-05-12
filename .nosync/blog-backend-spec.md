@@ -5,7 +5,7 @@
 
 ---
 
-## 1. 서버 정보
+## 1. 블로그 서버 정보
 
 - Framework: Spring Boot 3.5.x (Java 17)
 - Database: Supabase PostgreSQL
@@ -125,9 +125,7 @@ TIL 레포에서 main에 push하면 GitHub Actions가 이 엔드포인트를 호
   "files": [
     {
       "path": "Java/Spring/AOP.md",
-      "title": "AOP로 횡단 관심사 분리하기",
-      "summary": "Spring AOP의 개념과 적용 방법 정리",
-      "content": "# AOP 개념 정리\n\n본문...",
+      "content": "---\ntitle: 제목\nsummary: 소제목\nstatus: PUBLISHED\n---\n# AOP 개념 정리\n\n본문...",
       "createdAt": "2026-03-15T10:30:00",
       "updatedAt": "2026-04-01T14:20:00"
     }
@@ -136,9 +134,7 @@ TIL 레포에서 main에 push하면 GitHub Actions가 이 엔드포인트를 호
 ```
 
 - `path`: TIL 레포 루트 기준 상대 경로
-- `title`: frontmatter의 `title` 값. 없으면 `null`
-- `summary`: frontmatter의 `summary` 값. 없으면 `null`
-- `content`: 마크다운 원문
+- `content`: frontmatter를 포함한 마크다운 원문
 - `createdAt`: 파일의 최초 git 커밋 시각 (ISO 8601, UTC)
 - `updatedAt`: 파일의 마지막 git 커밋 시각 (ISO 8601, UTC)
 
