@@ -69,8 +69,13 @@ jobs:
             updated_at=$(git log -1 --format="%aI" -- "$file")
             created_at="${created_at:-$updated_at}"
 
+            title=$(sed -n '/^---$/,/^---$/p' "$file" | grep -m1 '^title:' | sed 's/^title:[[:space:]]*//' | tr -d '"' || echo "")
+            summary=$(sed -n '/^---$/,/^---$/p' "$file" | grep -m1 '^summary:' | sed 's/^summary:[[:space:]]*//' | tr -d '"' || echo "")
+
             jq -n --arg path "$file" \
                   --rawfile content "$file" \
+                  --arg title "$title" \
+                  --arg summary "$summary" \
                   --arg createdAt "$created_at" \
                   --arg updatedAt "$updated_at" \
               '{ path: $path, title: (if $title == "" then null else $title end), summary: (if $summary == "" then null else $summary end), content: $content, createdAt: $createdAt, updatedAt: $updatedAt }'
