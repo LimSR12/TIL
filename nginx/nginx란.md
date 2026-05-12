@@ -2,6 +2,7 @@
 title: "Nginx 알아보기"
 summary: "Nginx 정의, 장점, 사용방법 정리하기"
 status: publish
+category:
 ---
 
 # Nginx

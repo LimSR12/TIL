@@ -2,6 +2,7 @@
 title: "DI (Dependency Injection, 의존성 주입)"
 summary: "IoC를 구현하는 구체적인 방법이다. 필요한 객체(의존성)를 내가 직접 만들지 않고, 외부에서 주입받는 것"
 status: publish
+category: "Backend"
 ---
 
 # DI (Dependency Injection, 의존성 주입)

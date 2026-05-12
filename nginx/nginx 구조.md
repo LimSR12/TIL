@@ -2,6 +2,7 @@
 title: "Nginx 설정 파일 구조 알아보기"
 summary: "제대로 짚고 넘어가지 않으니 너무 헷갈려서 짚고 넘어가기"
 status: publish
+category:
 ---
 
 # nginx 설정 구조
