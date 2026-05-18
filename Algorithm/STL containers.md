@@ -1,5 +1,5 @@
 ---
-title: "C++ 코딩테스트를 위한 STL 컨테이너 핵심 정리"
+title: "C++ STL 컨테이너 정리"
 summary: "vector부터 priority_queue, map, string까지 자주 쓰는 STL 사용법과 주의사항"
 status: publish
 tag:
