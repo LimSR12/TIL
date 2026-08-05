@@ -1,3 +1,11 @@
+---
+title: "rm과-unlink의-차이"
+summary: ""
+status: DRAFT
+tag: []
+category: ""
+---
+
 # fs.rm vs fs.unlink
 
 ## fs.promises.rm(path, [options])
