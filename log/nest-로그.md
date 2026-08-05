@@ -1,3 +1,11 @@
+---
+title: "nest-로그"
+summary: ""
+status: DRAFT
+tag: []
+category: ""
+---
+
 - 요청 시점(미들웨어): IP, method, path, user-agent 같은 '요청 정보'를 남기기 좋음
 
 - 응답 시점(인터셉터): statusCode, 응답 시간(ms), 성공/실패 여부를 남기기 좋음
