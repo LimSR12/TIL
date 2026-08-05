@@ -2,6 +2,8 @@
 title: "Prisma란?"
 summary: "**Prisma**는 Node.js / TypeScript 환경에서 사용하는 **차세대 ORM 라이브러리**이다."
 status: publish
+tag: []
+category: ""
 ---
 # Prisma란?
 

@@ -1,3 +1,11 @@
+---
+title: "nestjs-swagger"
+summary: ""
+status: DRAFT
+tag: []
+category: ""
+---
+
 # NestJS Swagger 데코레이터(커스텀 applyDecorators) 작성 가이드
 
 > 목적: 컨트롤러에서 Swagger 데코레이터를 반복 작성하지 않고, 엔드포인트별 문서 규칙을 **재사용 가능한 함수(Decorator Factory)**로 표준화한다.

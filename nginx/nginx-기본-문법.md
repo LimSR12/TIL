@@ -2,6 +2,8 @@
 title: "Nginx 기본 문법 정리"
 summary: "Nginx 설정 파일의 기본 문법과 구조 파악하기"
 status: publish
+tag: []
+category: ""
 ---
 
 # Nginx 문법

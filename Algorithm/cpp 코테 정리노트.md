@@ -2,6 +2,8 @@
 title: "C++ 코딩테스트 문법 & STL 정리노트"
 summary: "코딩테스트에서 '이걸 어떻게 쓰더라?' 하고 당황하지 않기 위한 레퍼런스"
 status: publish
+tag: []
+category: ""
 ---
 
 > 본 문서는 Claude에 요청하여 생성한 C++ 코테 준비 정리노트 문서입니다!

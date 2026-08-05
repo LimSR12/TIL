@@ -2,6 +2,8 @@
 title: "IoC / DI 개념 정리"
 summary: "간단한 예시로 학습해보는 IoC 와 DI
 status: publish
+tag: []
+category: ""
 ---
 
 # IoC / DI 개념 정리

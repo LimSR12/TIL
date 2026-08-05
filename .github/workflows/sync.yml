@@ -77,6 +77,7 @@ jobs:
             fm_status=$(sed -n '/^---$/,/^---$/{ s/^status:[[:space:]]*//p }' "$file")
             fm_title=$(sed -n '/^---$/,/^---$/{ s/^title:[[:space:]]*//p }' "$file")
             fm_summary=$(sed -n '/^---$/,/^---$/{ s/^summary:[[:space:]]*//p }' "$file")
+            fm_category=$(sed -n '/^---$/,/^---$/{ s/^category:[[:space:]]*//p }' "$file")
 
             # draft이면 건너뜀
             if [ "$fm_status" = "draft" ]; then
@@ -91,10 +92,11 @@ jobs:
             jq -n --arg path "$file" \
                   --arg title "$fm_title" \
                   --arg summary "$fm_summary" \
+                  --arg category "$fm_category" \
                   --rawfile content "$file" \
                   --arg createdAt "$created_at" \
                   --arg updatedAt "$updated_at" \
-              '{ path: $path, title: (if $title == "" then null else $title end), summary: (if $summary == "" then null else $summary end), content: $content, createdAt: $createdAt, updatedAt: $updatedAt }'
+              '{ path: $path, title: (if $title == "" then null else $title end), summary: (if $summary == "" then null else $summary end), category: (if $category == "" then null else $category end), content: $content, createdAt: $createdAt, updatedAt: $updatedAt }'
           done | jq -s '{ files: . }' > /tmp/sync-payload.json
 
           file_count=$(jq '.files | length' /tmp/sync-payload.json)
