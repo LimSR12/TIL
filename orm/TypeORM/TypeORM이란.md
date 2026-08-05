@@ -1,7 +1,9 @@
 ---
-title: "ORM 이란?"
-summary: "ORM이란 무엇인지, 왜 쓰는지 알아보기"
+title: "ORM이란 무엇이며 왜 쓰는거죠?"
+summary: "TypeORM을 써보면서 이유 파악해보기"
 status: publish
+tag: []
+category: ""
 ---
 
 # ORM 이란?
