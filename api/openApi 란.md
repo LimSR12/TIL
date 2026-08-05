@@ -2,6 +2,8 @@
 title: "OpenAPI(OAS)란 무엇인가?"
 summary: "모의면접에서 OpenAPI 규격 질문을 받은 계기로 학습하게 된 OpenAPI Specification 개념 정리"
 status: draft
+tag: []
+category: ""
 ---
 
 # 학습 배경

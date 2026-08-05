@@ -1,7 +1,9 @@
 ---
 title: "[CLAUDE] Nginx에서 외부 /api/ 요청 차단 가능 여부에 대한 질의응답"
 summary: "컨테이너 간 내부 통신 구조와 /api/ 외부 노출 차단 가능 여부"
-status: publish
+status: draft
+tag: []
+category: ""
 ---
 
 # 질문
