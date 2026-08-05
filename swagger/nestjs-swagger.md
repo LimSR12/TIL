@@ -1,9 +1,7 @@
 ---
-title: "nestjs-swagger"
+title: "NestJS Swagger 데코레이터(커스텀 applyDecorators) 작성 가이드"
 summary: ""
-status: DRAFT
-tag: []
-category: ""
+status: draft
 ---
 
 # NestJS Swagger 데코레이터(커스텀 applyDecorators) 작성 가이드

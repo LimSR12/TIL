@@ -1,10 +1,11 @@
 ---
-title: "Prisma란?"
-summary: "**Prisma**는 Node.js / TypeScript 환경에서 사용하는 **차세대 ORM 라이브러리**이다."
+title: "Prisma 기본 개념 정리"
+summary: "프로젝트를 진행하면서 처음 사용해본 Prisma 관련 학습 내용 정리"
 status: publish
 tag: []
 category: ""
 ---
+
 # Prisma란?
 
 **Prisma**는 Node.js / TypeScript 환경에서 사용하는 **차세대 ORM 라이브러리**이다.

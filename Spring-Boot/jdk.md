@@ -1,9 +1,9 @@
 ---
 title: "Java 버전 변천사 및 Spring Boot 버전 선택 가이드"
-summary: ""
+summary: "왜 이 버전을 선택했나요? 라고 물어봐도 대답할 수 있어야 한다!"
 status: publish
-tag: []
-category: ""
+tag:
+category: "Backend"
 ---
 
 # Java 버전 변천사 및 Spring Boot 버전 선택 가이드
@@ -20,7 +20,7 @@ Java는 1995년 출시 이후 꾸준히 발전해왔다. 2017년 Java 9부터 **
 
 ### Java 8 (2014) — 현대 Java의 시작
 
-그 이전까지는 함수를 전달하려면 **익명 클래스**를 사용해야 했다. 코드가 장황하고 가독성이 낮다는 문제가 있었다.
+이전까지는 함수를 전달하려면 **익명 클래스**를 사용해야 했다. 아래 예시에서 볼 수 있듯, 코드가 장황하고 가독성이 낮다는 문제가 있었다.
 
 ```java
 // Java 8 이전 — 익명 클래스
@@ -35,7 +35,7 @@ list.sort(new Comparator<String>() {
 list.sort((a, b) -> a.compareTo(b));
 ```
 
-또한 `null` 처리를 매번 `if (x != null)`으로 해야 해서 NPE(NullPointerException)가 빈번했다. `Optional`이 도입되어 null 가능성을 타입으로 표현할 수 있게 되었다.
+또한 `null` 처리를 매번 `if (x != null)`으로 해야 해서 `NPE(NullPointerException)`가 빈번했다고 한다. 그래서 이를 해결하고자 처음으로 `Optional`이 도입되어 null 가능성을 타입으로 표현할 수 있게 되었다.
 
 ```java
 // 이전 — null 체크를 명시하지 않으면 NPE 발생 가능
@@ -47,7 +47,7 @@ Optional<String> name = Optional.ofNullable(user.getName());
 name.ifPresent(n -> System.out.println(n.toUpperCase()));
 ```
 
-`Stream API`도 이때 도입되어 컬렉션을 함수형 스타일로 처리할 수 있게 되었다.
+`Stream API`도 이때 도입되어 컬렉션을 함수형 스타일로 처리할 수 있게 되었다고 한다.
 
 ```java
 List<String> result = users.stream()
@@ -68,9 +68,9 @@ List<String> result = users.stream()
 
 ### Java 11 (2018) — 첫 번째 주요 LTS
 
-Java 9, 10에서 모듈 시스템 등이 도입되었지만 현장 체감은 적었고, **11이 8 이후 첫 LTS**로 자리잡았다.
+Java 8 이후 Java 9, 10에서 모듈 시스템 등이 도입되었지만 현장 체감은 적었고, **11이 8 이후 첫 LTS**로 자리잡았다.
 
-지역 변수 타입 추론 `var`가 정식 도입되어 반복적인 타입 선언을 줄일 수 있게 되었다.
+이때 지역 변수 타입 추론 `var`가 정식 도입되어 반복적인 타입 선언을 줄일 수 있게 되었다.
 
 ```java
 // 이전
@@ -88,7 +88,7 @@ var map = new HashMap<String, List<Integer>>();
 "a\nb\nc".lines().toList();  // ["a", "b", "c"]
 ```
 
-또한 이 시점에 **Oracle JDK가 유료화**되면서 OpenJDK 기반의 무료 배포판인 **Eclipse Temurin(Adoptium)**, **Amazon Corretto** 등이 주류로 자리잡았다.
+또한 이 시점에 **Oracle JDK가 유료화**되면서 OpenJDK 기반의 무료 배포판인 **Eclipse Temurin(Adoptium)**, **Amazon Corretto** 등이 주류로 자리잡았다고 한다.
 
 **핵심 추가 기능**
 
@@ -101,7 +101,7 @@ var map = new HashMap<String, List<Integer>>();
 
 ### Java 17 (2021) — Spring Boot 3.x의 기준 LTS
 
-현재 가장 널리 쓰이는 LTS 버전이다. **Spring Boot 3.x의 최소 요구 버전**이기도 하다.
+Java 17이 현재 가장 널리 쓰이는 LTS 버전으로 알려져 있으며, **Spring Boot 3.x의 최소 요구 버전**이기도 하다.
 
 **Record** 가 정식 도입되었다. 불변 데이터 클래스를 한 줄로 선언할 수 있어 DTO 작성이 간결해졌다.
 
@@ -168,7 +168,7 @@ String result = switch (day) {
 
 ### Java 21 (2023) — 현재 최신 LTS
 
-**Virtual Thread(가상 스레드)** 가 가장 큰 변화다. 기존 Java 스레드는 OS 스레드와 1:1로 매핑되어 수천 개 이상 생성 시 메모리와 컨텍스트 스위칭 비용이 컸다. 가상 스레드는 JVM이 직접 스케줄링하여 수십만 개도 가볍게 처리할 수 있다.
+Java 21 에서는 **Virtual Thread(가상 스레드)** 가 가장 큰 변화였다. 기존 Java 스레드는 OS 스레드와 1:1로 매핑되어 수천 개 이상 생성 시 메모리와 컨텍스트 스위칭 비용이 컸다. 그러나 21부터는 가상 스레드가 생겨남에 따라 JVM이 직접 스케줄링하여 수십만 개도 가볍게 처리할 수 있게 되었다고 한다. (나중에 가상 스레드 관련 실습 토이프로젝트 해보면 좋을 것 같기도 하다!)
 
 ```java
 // 기존 — OS 스레드 1:1 매핑, 수천 개가 한계

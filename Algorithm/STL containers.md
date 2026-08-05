@@ -1,10 +1,27 @@
 ---
-title: "C++ STL 컨테이너 상세 정리"
-summary: ""
+title: "C++ STL 컨테이너 정리"
+summary: "vector부터 priority_queue, map, string까지 자주 쓰는 STL 사용법과 주의사항"
 status: publish
-tag: []
-category: ""
+tag:
+  - C++
+  - STL
+category: "Algorithm"
 ---
+
+## 빠른 참조 요약표
+
+| 컨테이너         | 용도                                | 핵심 메서드                                | ⚠️ 주의사항                       |
+| ---------------- | ----------------------------------- | ------------------------------------------ | --------------------------------- |
+| `vector`         | 동적 배열, 거의 모든 곳             | `push_back`, `[]`, `size`, `sort`          | `size()-1` 빈 벡터 시 언더플로우  |
+| `queue`          | **BFS**                             | `push`, `front`, `pop`                     | `pop()`은 값 반환 안 함           |
+| `stack`          | 괄호 검사, DFS 반복                 | `push`, `top`, `pop`                       | `pop()`은 값 반환 안 함           |
+| `deque`          | 양쪽 삽입/삭제, 뱀 문제             | `push_front/back`, `pop_front/back`, `[]`  |                                   |
+| `priority_queue` | **다익스트라**, 최대/최소 반복 추출 | `push`, `top`, `pop`                       | 기본 최대힙, 최소힙은 `greater<>` |
+| `set`            | 중복 제거 + 자동 정렬               | `insert`, `erase`, `count`, `lower_bound`  |                                   |
+| `multiset`       | 중복 허용 정렬                      | `insert`, `erase`, `count`, `find`         | `erase(값)` → 전부 삭제됨!        |
+| `map`            | key-value 매핑                      | `[]`, `count`, `find`, `erase`             | `m[key]` 접근만으로 key 자동 생성 |
+| `unordered_map`  | 빠른 카운팅/조회                    | `[]`, `count`, `find`                      | 평균 O(1), 최악 O(N)              |
+| `string`         | 문자열 처리                         | `substr`, `find`, `+=`, `stoi`/`to_string` | `find` 실패 시 `string::npos`     |
 
 ## 1. vector
 
@@ -540,18 +557,3 @@ abs(-3.14);    // 3.14 (double)
 ```
 
 ---
-
-## 빠른 참조 요약표
-
-| 컨테이너         | 용도                                | 핵심 메서드                                | ⚠️ 주의사항                       |
-| ---------------- | ----------------------------------- | ------------------------------------------ | --------------------------------- |
-| `vector`         | 동적 배열, 거의 모든 곳             | `push_back`, `[]`, `size`, `sort`          | `size()-1` 빈 벡터 시 언더플로우  |
-| `queue`          | **BFS**                             | `push`, `front`, `pop`                     | `pop()`은 값 반환 안 함           |
-| `stack`          | 괄호 검사, DFS 반복                 | `push`, `top`, `pop`                       | `pop()`은 값 반환 안 함           |
-| `deque`          | 양쪽 삽입/삭제, 뱀 문제             | `push_front/back`, `pop_front/back`, `[]`  |                                   |
-| `priority_queue` | **다익스트라**, 최대/최소 반복 추출 | `push`, `top`, `pop`                       | 기본 최대힙, 최소힙은 `greater<>` |
-| `set`            | 중복 제거 + 자동 정렬               | `insert`, `erase`, `count`, `lower_bound`  |                                   |
-| `multiset`       | 중복 허용 정렬                      | `insert`, `erase`, `count`, `find`         | `erase(값)` → 전부 삭제됨!        |
-| `map`            | key-value 매핑                      | `[]`, `count`, `find`, `erase`             | `m[key]` 접근만으로 key 자동 생성 |
-| `unordered_map`  | 빠른 카운팅/조회                    | `[]`, `count`, `find`                      | 평균 O(1), 최악 O(N)              |
-| `string`         | 문자열 처리                         | `substr`, `find`, `+=`, `stoi`/`to_string` | `find` 실패 시 `string::npos`     |

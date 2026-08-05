@@ -40,16 +40,8 @@ jobs:
             fi
           fi
 
-          echo "::group::수집된 파일 목록 (필터 전)"
-          echo "${changed:-<없음>}"
-          echo "::endgroup::"
-
           # ── 2. 메타 디렉토리 제외 ──
           changed=$(echo "$changed" | grep -v -E '^\.(nosync|github)/' || true)
-
-          echo "::group::필터 후 파일 목록"
-          echo "${changed:-<없음>}"
-          echo "::endgroup::"
 
           if [ -z "$changed" ]; then
             echo "⏭ 동기화할 .md 파일 없음 — skip"
@@ -75,12 +67,12 @@ jobs:
 
             # frontmatter 필드 추출
             fm_status=$(sed -n '/^---$/,/^---$/{ s/^status:[[:space:]]*//p }' "$file")
-            fm_title=$(sed -n '/^---$/,/^---$/{ s/^title:[[:space:]]*//p }' "$file")
-            fm_summary=$(sed -n '/^---$/,/^---$/{ s/^summary:[[:space:]]*//p }' "$file")
-            fm_category=$(sed -n '/^---$/,/^---$/{ s/^category:[[:space:]]*//p }' "$file")
+            fm_title=$(sed -n '/^---$/,/^---$/{ s/^title:[[:space:]]*//p }' "$file" | tr -d '"')
+            fm_summary=$(sed -n '/^---$/,/^---$/{ s/^summary:[[:space:]]*//p }' "$file" | tr -d '"')
+            fm_category=$(sed -n '/^---$/,/^---$/{ s/^category:[[:space:]]*//p }' "$file" | tr -d '"')
 
             # draft이면 건너뜀
-            if [ "$fm_status" = "draft" ]; then
+            if [ "$fm_status" = "draft" ] || [ "$fm_status" = "DRAFT" ]; then
               echo "⏭ draft 상태, 건너뜀: $file" >&2
               continue
             fi

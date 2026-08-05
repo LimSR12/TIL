@@ -1,9 +1,10 @@
 ---
-title: "Java 입력 정리 (BufferedReader vs StringTokenizer)"
-summary: "Java 코딩테스트에서는 입력을 거의 항상 **BufferedReader**로 받는다."
+title: "Java 입력 비교 - BufferedReader vs StringTokenizer"
+summary: "코딩테스트에서 Java로 효율적인 입력받기"
 status: publish
-tag: []
-category: ""
+tag:
+  - Java
+category: "Algorithm"
 ---
 
 # Java 입력 정리 (BufferedReader vs StringTokenizer)
@@ -14,8 +15,8 @@ Java 코딩테스트에서는 입력을 거의 항상 **BufferedReader**로 받�
 
 ### 이유
 
-- `Scanner` → 속도가 느림 (시간초과 원인이 될 수 있다!)
-- `BufferedReader` → 문자열 단위로 빠르게 입력 가능
+- `Scanner` : 속도가 느림 (시간초과 원인이 될 수 있다!)
+- `BufferedReader` : 문자열 단위로 빠르게 입력 가능
 
 👉 **입력을 읽는 도구 = BufferedReader**
 

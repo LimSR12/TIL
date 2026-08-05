@@ -2,8 +2,7 @@
 title: "Spring Bean 이란 무엇인가"
 summary: "Bean이 무엇인지 알아보고, 언제 어떻게 쓰이는지 정리하기"
 status: publish
-tag: []
-category: ""
+category: "Backend"
 ---
 
 # Spring Bean
