@@ -1,6 +1,6 @@
 ---
-title: "nginx/nginx.conf 에서 SSL 보안 설정하기"
-summary: "SSL 보안이란 무엇인가? 무슨 역할이고 왜 필요한가?"
+title: "nginx.conf 에서 SSL 보안 설정하기"
+summary: "SSL 보안이 뭐지? 왜 필요하지? 어떻게 설정하지?"
 status: publish
 category: "DevOps"
 ---
