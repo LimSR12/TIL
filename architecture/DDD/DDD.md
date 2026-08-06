@@ -1,7 +1,9 @@
 ---
-title: "1️⃣ Domain 이란?"
+title: "DDD 알아보기"
 summary: "사전적 의미는 `영역`, `집합` 소프트웨어에서 의미는 `사용자가 사용하는 것`, `소프트웨어로 해결하고자 하는 문제 영역`, `비즈니스 영역`"
-status: publish
+status: DRAFT
+tag: []
+category: ""
 ---
 
 # 1️⃣ Domain 이란?
