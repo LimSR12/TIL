@@ -1,7 +1,9 @@
 ---
 title: "Codex CLI란?"
 summary: "OpenAI의 로컬 터미널 코딩 에이전트 Codex CLI의 개요와 설치, 실행 방법"
-status: publish
+status: draft
+tag: []
+category: ""
 ---
 
 # Codex CLI 란
