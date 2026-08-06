@@ -141,11 +141,15 @@ jobs:
             fm_date="${fm[5]:-}"
             fm_tag="${fm[6]:-}"
 
-            if [ "${fm_status,,}" = "draft" ]; then
-              echo "⏭ draft, 건너뜀: $file"; skipped=$((skipped+1)); continue
-            fi
             if [ "$has_body" != "1" ]; then
               echo "⏭ 본문 없음, 건너뜀: $file"; skipped=$((skipped+1)); continue
+            fi
+
+            # status: draft가 아니면 모두 PUBLISHED로 취급 (README 규칙과 동일)
+            if [ "${fm_status,,}" = "draft" ]; then
+              status="DRAFT"
+            else
+              status="PUBLISHED"
             fi
 
             updated_at="${last_at[$file]:-}"
@@ -173,6 +177,7 @@ jobs:
                   --arg title      "$fm_title" \
                   --arg summary    "$fm_summary" \
                   --arg category   "$fm_category" \
+                  --arg status     "$status" \
                   --argjson tag     "$tag_json" \
                   --rawfile content "$file" \
                   --arg createdAt  "$created_at" \
@@ -182,6 +187,7 @@ jobs:
                      title:    (if $title    == "" then null else $title    end),
                      summary:  (if $summary  == "" then null else $summary  end),
                      category: (if $category == "" then null else $category end),
+                     status: $status,
                      tag: $tag,
                      content: $content,
                      createdAt: $createdAt,
