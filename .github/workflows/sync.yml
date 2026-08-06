@@ -3,6 +3,7 @@ name: TIL Sync
 on:
   push:
     branches: [main]
+    paths: ["**.md"]
   workflow_dispatch:
     inputs:
       full_sync:
@@ -10,100 +11,207 @@ on:
         type: boolean
         default: true
 
+permissions:
+  contents: read
+
+concurrency:
+  group: til-sync
+  cancel-in-progress: false
+
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Build sync payload
-        id: payload
+      - name: Collect changed files
+        id: collect
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          FULL_SYNC: ${{ inputs.full_sync }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
         run: |
-          set -eo pipefail
-
+          set -euo pipefail
           git config core.quotePath false
 
-          # ── 1. 변경된 .md 파일 목록 수집 ──
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.full_sync }}" == "true" ]]; then
-            echo "▶ Full sync mode"
-            changed=$(git ls-tree -r --name-only HEAD | grep -E '\.md$' || true)
+          UPSERTS=/tmp/upserts.txt
+          DELETES=/tmp/deletes.txt
+          : > "$UPSERTS"; : > "$DELETES"
+
+          full_sync() {
+            echo "▶ 전체 동기화 모드"
+            # 주의: git ls-tree는 '*.md' 글롭 pathspec을 지원하지 않아 조용히 0건이 됨.
+            #       glob을 지원하는 ls-files를 사용할 것.
+            git ls-files -z -- '*.md' > "$UPSERTS"
+          }
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" && "$FULL_SYNC" == "true" ]]; then
+            full_sync
+          elif [[ -z "$BEFORE" || "$BEFORE" =~ ^0+$ ]] \
+            || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            # 최초 푸시이거나 force-push/브랜치 재생성으로 before 커밋이 사라진 경우
+            echo "⚠ before 커밋($BEFORE)을 찾을 수 없어 전체 동기화로 폴백"
+            full_sync
           else
-            BEFORE="${{ github.event.before }}"
-            AFTER="${{ github.event.after }}"
+            echo "▶ 증분 동기화: $BEFORE → $AFTER"
+            # --no-renames: 이름 변경을 '삭제 + 추가'로 분해해야
+            #   새 경로는 upsert 되고 옛 경로는 서버에서 지워짐
+            git diff -z --no-renames --name-only --diff-filter=AM "$BEFORE" "$AFTER" -- '*.md' > "$UPSERTS"
+            git diff -z --no-renames --name-only --diff-filter=D  "$BEFORE" "$AFTER" -- '*.md' > "$DELETES"
+          fi
 
-            if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
-              changed=$(git ls-tree -r --name-only "$AFTER" -- '*.md')
+          # 메타/설정 디렉토리 제외: .으로 시작하는 세그먼트 배제
+          for f in "$UPSERTS" "$DELETES"; do
+            grep -zvE '(^|/)\.' "$f" > "$f.tmp" || true
+            mv "$f.tmp" "$f"
+          done
+
+          echo "upsert 후보: $(tr -cd '\0' < "$UPSERTS" | wc -c)개"
+          echo "delete 후보: $(tr -cd '\0' < "$DELETES" | wc -c)개"
+
+      - name: Build payload
+        id: payload
+        run: |
+          set -euo pipefail
+
+          # ── frontmatter 파서 ──
+          # 첫 줄이 '---'인 경우에만 frontmatter로 인정하고 첫 번째 닫는 '---'에서 종료.
+          cat > /tmp/fm.awk <<'AWK'
+          BEGIN { infm = 0; done = 0; nonblank = 0 }
+          { sub(/\r$/, "") }
+          NR == 1 { if ($0 == "---") { infm = 1; next } else { done = 1 } }
+          infm && $0 == "---" { infm = 0; done = 1; next }
+          infm {
+            i = index($0, ":")
+            if (i == 0) next
+            k = substr($0, 1, i - 1); v = substr($0, i + 1)
+            gsub(/^[ \t]+|[ \t]+$/, "", k); gsub(/^[ \t]+|[ \t]+$/, "", v)
+            if ((v ~ /^".*"$/) || (v ~ /^'.*'$/)) v = substr(v, 2, length(v) - 2)
+            meta[k] = v
+            next
+          }
+          done && $0 ~ /[^ \t]/ { nonblank = 1 }
+          END {
+            print (nonblank ? "1" : "0")
+            print meta["status"]
+            print meta["title"]
+            print meta["summary"]
+            print meta["category"]
+            print meta["date"]
+          }
+          AWK
+
+          # ── 파일별 최종 수정 시각을 git log로 수집 ──
+          declare -A last_at
+          ts=""
+          while IFS= read -r line; do
+            if [[ "$line" == @* ]]; then
+              ts="${line:1}"
+            elif [[ -n "$line" && -z "${last_at[$line]:-}" ]]; then
+              last_at["$line"]="$ts"   # git log는 최신순이므로 첫 등장이 최종 수정
+            fi
+          done < <(git log --no-renames --format="@%aI" --name-only --diff-filter=AM -- '*.md')
+
+          : > /tmp/objs.ndjson
+          skipped=0
+
+          while IFS= read -r -d '' file; do
+            [ -f "$file" ] || { echo "⚠ 파일 없음, 건너뜀: $file"; skipped=$((skipped+1)); continue; }
+
+            mapfile -t fm < <(awk -f /tmp/fm.awk "$file")
+            has_body="${fm[0]:-0}"
+            fm_status="${fm[1]:-}"
+            fm_title="${fm[2]:-}"
+            fm_summary="${fm[3]:-}"
+            fm_category="${fm[4]:-}"
+            fm_date="${fm[5]:-}"
+
+            if [ "${fm_status,,}" = "draft" ]; then
+              echo "⏭ draft, 건너뜀: $file"; skipped=$((skipped+1)); continue
+            fi
+            if [ "$has_body" != "1" ]; then
+              echo "⏭ 본문 없음, 건너뜀: $file"; skipped=$((skipped+1)); continue
+            fi
+
+            updated_at="${last_at[$file]:-}"
+
+            # createdAt 우선순위:
+            #   1) frontmatter의 date  — git 이력 재작성(rebase/squash)에 영향받지 않는 유일한 값
+            #   2) --follow로 추적한 최초 추가 커밋 — 이름 변경을 넘어 원래 작성일을 찾음
+            #   3) 최종 수정 시각 — 위 둘 다 없을 때의 폴백
+            if [ -n "$fm_date" ]; then
+              # date: 2026-01-05 처럼 날짜만 적힌 경우 ISO 8601로 정규화
+              if [[ "$fm_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+                created_at="${fm_date}T00:00:00+09:00"
+              else
+                created_at="$fm_date"
+              fi
             else
-              changed=$(git diff --name-only --diff-filter=AM "$BEFORE" "$AFTER" -- '*.md')
-            fi
-          fi
-
-          # ── 2. 메타 디렉토리 제외 ──
-          changed=$(echo "$changed" | grep -v -E '^\.(nosync|github)/' || true)
-
-          if [ -z "$changed" ]; then
-            echo "⏭ 동기화할 .md 파일 없음 — skip"
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # ── 3. JSON payload 생성 ──
-          echo "$changed" | while IFS= read -r file; do
-            [ -z "$file" ] && continue
-
-            if [ ! -f "$file" ]; then
-              echo "⚠ 파일 없음, 건너뜀: $file" >&2
-              continue
+              created_at=$(git log --diff-filter=A --follow --format=%aI -- "$file" | tail -1)
+              created_at="${created_at:-$updated_at}"
             fi
 
-            # frontmatter 제외 후 실제 본문이 비어있으면 건너뜀
-            body=$(sed '/^---$/,/^---$/d' "$file" | tr -d '[:space:]')
-            if [ -z "$body" ]; then
-              echo "⏭ 본문 없음, 건너뜀: $file" >&2
-              continue
-            fi
-
-            # frontmatter 필드 추출
-            fm_status=$(sed -n '/^---$/,/^---$/{ s/^status:[[:space:]]*//p }' "$file")
-            fm_title=$(sed -n '/^---$/,/^---$/{ s/^title:[[:space:]]*//p }' "$file" | tr -d '"')
-            fm_summary=$(sed -n '/^---$/,/^---$/{ s/^summary:[[:space:]]*//p }' "$file" | tr -d '"')
-            fm_category=$(sed -n '/^---$/,/^---$/{ s/^category:[[:space:]]*//p }' "$file" | tr -d '"')
-
-            # draft이면 건너뜀
-            if [ "$fm_status" = "draft" ] || [ "$fm_status" = "DRAFT" ]; then
-              echo "⏭ draft 상태, 건너뜀: $file" >&2
-              continue
-            fi
-
-            created_at=$(git log --diff-filter=A --follow --format="%aI" -- "$file" | tail -1)
-            updated_at=$(git log -1 --format="%aI" -- "$file")
-            created_at="${created_at:-$updated_at}"
-
-            jq -n --arg path "$file" \
-                  --arg title "$fm_title" \
-                  --arg summary "$fm_summary" \
-                  --arg category "$fm_category" \
+            if ! jq -n \
+                  --arg path       "$file" \
+                  --arg title      "$fm_title" \
+                  --arg summary    "$fm_summary" \
+                  --arg category   "$fm_category" \
                   --rawfile content "$file" \
-                  --arg createdAt "$created_at" \
-                  --arg updatedAt "$updated_at" \
-              '{ path: $path, title: (if $title == "" then null else $title end), summary: (if $summary == "" then null else $summary end), category: (if $category == "" then null else $category end), content: $content, createdAt: $createdAt, updatedAt: $updatedAt }'
-          done | jq -s '{ files: . }' > /tmp/sync-payload.json
+                  --arg createdAt  "$created_at" \
+                  --arg updatedAt  "$updated_at" \
+                  '{
+                     path: $path,
+                     title:    (if $title    == "" then null else $title    end),
+                     summary:  (if $summary  == "" then null else $summary  end),
+                     category: (if $category == "" then null else $category end),
+                     content: $content,
+                     createdAt: $createdAt,
+                     updatedAt: $updatedAt
+                   }' >> /tmp/objs.ndjson 2>/tmp/jq.err; then
+              echo "⚠ JSON 생성 실패, 건너뜀: $file ($(cat /tmp/jq.err))"
+              skipped=$((skipped+1)); continue
+            fi
+          done < /tmp/upserts.txt
 
-          file_count=$(jq '.files | length' /tmp/sync-payload.json)
-          echo "✅ payload 생성 완료: ${file_count}개 파일"
+          jq -s '.' /tmp/objs.ndjson > /tmp/files.json
+          jq -R -s 'split("\u0000") | map(select(length > 0))' /tmp/deletes.txt > /tmp/deleted.json
 
-          if [ "$file_count" -eq 0 ]; then
-            echo "⏭ payload에 파일이 0개 — skip"
+          upserts=$(jq 'length' /tmp/files.json)
+          deletes=$(jq 'length' /tmp/deleted.json)
+
+          {
+            echo "### TIL Sync"
+            echo "- upsert: **${upserts}**건 / delete: **${deletes}**건 / skip: ${skipped}건"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "upserts=$upserts" >> "$GITHUB_OUTPUT"
+          echo "deletes=$deletes" >> "$GITHUB_OUTPUT"
+          if [ "$upserts" -eq 0 ] && [ "$deletes" -eq 0 ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
+        shell: bash
 
       - name: Sync to blog server
         if: steps.payload.outputs.skip != 'true'
+        env:
+          BLOG_API_URL: ${{ secrets.BLOG_API_URL }}
+          SYNC_SECRET: ${{ secrets.TIL_SYNC_SECRET }}
+          UPSERTS: ${{ steps.payload.outputs.upserts }}
+          DELETES: ${{ steps.payload.outputs.deletes }}
         run: |
-          curl -X POST "${{ secrets.BLOG_API_URL }}/api/v1/til/sync" \
+          set -euo pipefail
+
+          jq -c '{ files: ., deleted: [] }' /tmp/files.json > /tmp/payload.json
+          jq -c '.deleted = $d[0]' --slurpfile d /tmp/deleted.json /tmp/payload.json > /tmp/final.json
+
+          echo "▶ upsert ${UPSERTS}건 / delete ${DELETES}건 ($(wc -c < /tmp/final.json) bytes)"
+
+          curl -sS -X POST "${BLOG_API_URL}/api/v1/til/sync" \
             -H "Content-Type: application/json" \
-            -H "X-Sync-Secret: ${{ secrets.TIL_SYNC_SECRET }}" \
-            -d @/tmp/sync-payload.json \
-            --fail --silent --show-error
+            -H "X-Sync-Secret: ${SYNC_SECRET}" \
+            --data-binary "@/tmp/final.json" \
+            --fail-with-body --retry 3 --retry-connrefused --max-time 120
