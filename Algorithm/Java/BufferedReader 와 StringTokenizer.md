@@ -1,9 +1,8 @@
 ---
-title: "Java 입력 비교 - BufferedReader vs StringTokenizer"
-summary: "코딩테스트에서 Java로 효율적인 입력받기"
+title: "Java 입력 비교: BufferedReader vs StringTokenizer"
+summary: "코딩테스트에서 Java로 효율적인 입력 받으려면 어떻게 해야 할까"
 status: publish
-tag:
-  - Java
+tag: [java, io]
 category: "Algorithm"
 ---
 

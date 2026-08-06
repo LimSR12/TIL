@@ -1,7 +1,9 @@
 ---
 title: "코딩테스트 준비 알고리즘 Tier 리스트"
 summary: "GPT가 제안하는 출제 빈도에 따라 분류한 알고리즘 학습 로드맵"
-status: publish
+status: draft
+tag:
+category:
 ---
 
 # 🟢 Tier 1 — 무조건 나옴 (코테 기본 체력)
