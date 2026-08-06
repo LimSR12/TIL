@@ -1,7 +1,9 @@
 ---
 title: "🐳 Docker란 무엇인가"
 summary: Docker 기본 개념과 등장 배경, 특징 알아보기
-status: publish
+status: DRAFT
+category:
+tag: []
 ---
 
 # 🐳 Docker란 무엇인가
@@ -14,7 +16,7 @@ status: publish
 
 ## 2. Docker가 등장한 배경
 
-개발 환경과 실행 환경이 달라 발생하는 대표적인 문제들:
+개발 환경과 실행 환경이 달라 발생하는 대표적인 문제들은 다음과 같다!
 
 - 로컬에서는 잘 되는데 서버에서는 안 됨
 - 팀원마다 OS, 라이브러리, 버전이 다름
