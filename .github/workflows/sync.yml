@@ -166,14 +166,13 @@ jobs:
               created_at="${created_at:-$updated_at}"
             fi
 
-            category_json=$(to_json_array "$fm_category")
             tag_json=$(to_json_array "$fm_tag")
 
             if ! jq -n \
                   --arg path       "$file" \
                   --arg title      "$fm_title" \
                   --arg summary    "$fm_summary" \
-                  --argjson category "$category_json" \
+                  --arg category   "$fm_category" \
                   --argjson tag     "$tag_json" \
                   --rawfile content "$file" \
                   --arg createdAt  "$created_at" \
@@ -182,7 +181,7 @@ jobs:
                      path: $path,
                      title:    (if $title    == "" then null else $title    end),
                      summary:  (if $summary  == "" then null else $summary  end),
-                     category: $category,
+                     category: (if $category == "" then null else $category end),
                      tag: $tag,
                      content: $content,
                      createdAt: $createdAt,
