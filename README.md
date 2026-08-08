@@ -31,5 +31,6 @@ category: Backend
 | `tag`      | X    | `[값1, 값2]`          | 게시글 태그. 목록 하위에 작게 표시                             |
 | `date`     | X    | `YYYY-MM-DD`          | 작성일. 미지정 시 git 최초 커밋 일자 사용                      |
 
-- `tag`는 대괄호(`[]`) 안에 쉼표로 구분하여 작성한다.
+- `tag`는 대괄호(`[]`) 안에 쉼표로 구분하여 작성하며, 기존에 존재하지 않는 tag도 생성 가능하다.
 - `status`가 없거나 `PUBLISHED`이면 블로그에 노출된다. 데이터베이스에는 status와 관계없이 저장된다.
+- `category`는 다음 항목 중 하나를 선택한다. (Backend | CS | Algorithm | Database | Note | Infra)
