@@ -1,9 +1,9 @@
 ---
 title: "DDD 알아보기"
-summary: "사전적 의미는 `영역`, `집합` 소프트웨어에서 의미는 `사용자가 사용하는 것`, `소프트웨어로 해결하고자 하는 문제 영역`, `비즈니스 영역`"
+summary: "도메인 주도 설계라는 개념이 어려워서 학습해본 내용 정리"
 status: DRAFT
-tag: []
-category: ""
+tag: [Design Pattern, DDD]
+category: Study
 ---
 
 # 1️⃣ Domain 이란?
