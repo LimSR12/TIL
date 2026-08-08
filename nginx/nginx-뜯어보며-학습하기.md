@@ -4,7 +4,7 @@ summary: "제대로 짚고 넘어가지 않으니 너무 헷갈려요"
 status: publish
 tag: [Nginx]
 category: Infra
-Date: 2026-08-08
+date: 2026-08-08
 ---
 
 Nginx 공식문서랑 다양한 레퍼런스를 찾아보면서 어떤 역할을 하고 어떻게 사용하는 지 감은 잡은 것 같다.
