@@ -2,7 +2,8 @@
 title: "nginx.conf 에서 SSL 보안 설정하기"
 summary: "SSL 보안이 뭐지? 왜 필요하지? 어떻게 설정하지?"
 status: publish
-category: "DevOps"
+tag: [Nginx, SSL]
+category: Infra
 ---
 
 # nginx/nginx.conf 에서 SSL 보안 설정
@@ -33,7 +34,7 @@ ssl_certificate_key /etc/letsencrypt/live/boostus.site/privkey.pem;
 
 ### 역할
 
-- **HTTPS 통신을 위해 서버가 사용하는 공개키 인증서와 개인키를 지정**합니다.
+- **HTTPS 통신을 위해 서버가 사용하는 공개키 인증서와 개인키를 지정**한다.
 - 브라우저가 `https://boostus.site`에 접속하면:
   1. Nginx가 이 인증서를 브라우저에 전달
   2. 브라우저는 인증서가 **신뢰된 CA(여기서는 Let's Encrypt)** 에 의해 발급되었는지 검증
@@ -43,10 +44,10 @@ ssl_certificate_key /etc/letsencrypt/live/boostus.site/privkey.pem;
 
 - `fullchain.pem`
   - **서버 인증서 + 중간 인증서 체인**
-  - 브라우저가 “이 서버 인증서가 신뢰 가능한 루트 CA까지 이어지는지” 검증하는 데 필요하다고 합니다
+  - 브라우저가 “이 서버 인증서가 신뢰 가능한 루트 CA까지 이어지는지” 검증하는 데 필요하다.
 - `privkey.pem`
   - **서버의 개인키**
-  - TLS 핸드셰이크 중 세션 키 교환 및 서버 신원 증명에 사용된다고 합니다
+  - TLS 핸드셰이크 중 세션 키 교환 및 서버 신원 증명에 사용된다.
   - ⚠️ 외부 유출 시 심각한 보안 사고로 이어짐 → 컨테이너/서버 내부 접근 제한 필수 ⚠️
 
 ## 2️⃣ SSL / TLS 프로토콜 제한
@@ -57,7 +58,7 @@ ssl_protocols TLSv1.2 TLSv1.3;
 
 ### 역할
 
-- **허용할 TLS 버전만 명시적으로 제한**합니다.
+- **허용할 TLS 버전만 명시적으로 제한**한다.
 
 ### 왜 필요한가?
 

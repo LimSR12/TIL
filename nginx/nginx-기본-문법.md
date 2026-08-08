@@ -2,12 +2,13 @@
 title: "Nginx 기본 문법 정리"
 summary: "Nginx 설정 파일의 기본 문법과 구조 파악하기"
 status: publish
-category: "DevOps"
+tag: [Nginx]
+category: Infra
 ---
 
 # Nginx 문법
 
-Nginx 설정파일은 Directive 와 Context 로 구성된 블록 기반 문법을 사용한다고 한다.
+Nginx 설정파일은 `Directive` 와 `Context` 로 구성된 블록 기반 문법을 사용한다고 한다.
 
 > “무엇을 설정할지(Directive)”와 “어디에 적용할지(Context)”를 중괄호 `{}`로 구분하는 구조
 

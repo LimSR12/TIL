@@ -1,8 +1,9 @@
 ---
-title: "Nginx 알아보기"
-summary: "Nginx 정의, 장점, 사용방법 정리하기"
+title: "Nginx 학습하고 사용해보기"
+summary: "Nginx 정의, 장점, 사용방법"
 status: publish
-category:
+tag: [Nginx]
+category: Infra
 ---
 
 # Nginx

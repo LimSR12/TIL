@@ -1,8 +1,9 @@
 ---
-title: "HTTPS 적용하기 위한 Certbot 알아보기"
-summary: "SSL 인증서 발급받고 Nginx 설정은 어떻게 하는지 학습정리"
+title: "HTTPS를 적용하기 위한 Certbot이 무엇인지 학습정리"
+summary: "SSL 인증서 발급받고 Nginx 설정은 어떻게 하는가"
 status: publish
-category:
+tag: [Nginx, certbot]
+category: Infra
 ---
 
 # certbot 이 하는 일
