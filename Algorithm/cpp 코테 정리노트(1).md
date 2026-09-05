@@ -127,7 +127,6 @@ long long result = 1LL * a * a;
 ```cpp
 int a = 7, b = 2;
 double ratio = (double)a / b;        // 3.5
-double ratio2 = static_cast<double>(a) / b; // 동일
 
 // 문자 <-> 숫자
 char c = '7';
@@ -148,7 +147,7 @@ char lower = ch + 32;   // 또는 tolower(ch)
 ```cpp
 string s = "hello";
 
-s.length();    // 5 (size()와 동일)
+s.size();      // 5
 s.empty();     // false
 
 s += " world"; // 이어붙이기 -> "hello world"
@@ -170,7 +169,7 @@ s.find("bc");       // 1 (처음 발견 위치)
 s.find("xyz");      // string::npos (못 찾음)
 s.rfind("bc");      // 4 (뒤에서부터 검색)
 
-// 찾기 패턴
+// 찾기 예시
 if (s.find("bc") != string::npos) {
     // 찾음
 }
@@ -181,9 +180,8 @@ s.erase(2, 2);       // "abcabc" (위치, 길이)
 s.replace(0, 3, "Z"); // "Zabc"
 ```
 
-> `string::npos`는 뭐죠?
->
-> `string::npos`는 C++에서 문자열 검색 실패를 나타내는 특별한 값이다!
+> Q. `string::npos`는 뭐죠?
+> A. `string::npos`는 C++에서 문자열 검색 실패를 나타내는 특별한 값이다!
 
 ### 3.3 숫자 <-> 문자열 변환
 
@@ -229,7 +227,7 @@ while (getline(ss2, token, ',')) {
 vector<int> v;                    // 빈 벡터
 vector<int> v(10);                // 크기 10, 모두 0
 vector<int> v(10, -1);            // 크기 10, 모두 -1
-vector<int> v = {1, 2, 3, 4, 5}; // 초기화 리스트
+vector<int> v = {1, 2, 3, 4, 5};  // 초기화 리스트
 
 // 2차원 벡터
 vector<vector<int>> grid(N, vector<int>(M, 0)); // N×M, 0으로 초기화
@@ -238,11 +236,44 @@ vector<vector<int>> grid(N, vector<int>(M, 0)); // N×M, 0으로 초기화
 vector<vector<int>> adj(N + 1); // 정점 1~N
 ```
 
+그리고 벡터를 사용한 뒤 재 초기화해서 사용하고 싶은 경우 다음과 같은 방법들이 있다.
+
+#### 1. clear() — 원소만 다 비우기
+
+```cpp
+vector<int> v = {1, 2, 3};
+v.clear();           // v는 이제 빈 벡터, size()=0
+```
+
+#### 2. assign() — 특정 값으로 채워서 초기화
+
+> assign(n, 초기값)
+
+```cpp
+vector<int> v(5, 1);  // {1,1,1,1,1}
+v.assign(3, 0);       // {0,0,0} — 크기도 3으로, 값도 0으로 재설정
+```
+
+#### 3. = {} 또는 새 벡터 대입 — 통째로 교체
+
+```cpp
+vector<int> v = {1, 2, 3};
+v = {};               // 빈 벡터로 교체
+```
+
+#### 4. resize() — 크기만 다시 지정 (기존 값 유지 여부 다름)
+
+```cpp
+vector<int> v = {1, 2, 3};
+v.resize(5);          // {1,2,3,0,0} — 늘어난 자리는 기본값(0)으로 채움
+v.resize(2);          // {1,2} — 줄어들면 뒤에서부터 잘림, 기존 값은 유지됨
+v.resize(5, -1);      // 늘어난 자리를 -1로 채움 (두 번째 인자로 초기값 지정 가능)
+```
+
 ### 4.2 주요 메서드
 
 ```cpp
 v.push_back(10);       // 끝에 추가
-v.emplace_back(10);    // push_back과 유사, 약간 더 효율적(?)
 v.pop_back();          // 마지막 원소 제거
 v.size();              // 원소 개수 (반환형: size_t, unsigned)
 v.empty();             // 비었는지
@@ -261,8 +292,10 @@ v.erase(v.begin(), v.begin() + 3); // 앞 3개 삭제
 
 ### 4.3 v.size() 주의사항
 
-`v.size()`는 벡터의 원소 개수를 반환한다. 그리고 반환 타입은 `int` 가 아닌 `size_t` 인데 이게 `unsigned` 정수 타입이다!
-따라서 빈 벡터에서 `v.size()`는 0이 되고 `v.size() - 1` 을 잘못 쓰면 언더플로우가 발생할 수 있다.
+`v.size()`는 벡터의 원소 개수를 반환한다.
+
+이때 반환 타입은 `int` 가 아닌 `size_t` 인데, 이게 `unsigned` 정수 타입이다!
+따라서 빈 벡터에서 `v.size()`는 0이니까 `v.size() - 1` 을 잘못 쓰면 언더플로우가 발생할 수 있다.
 
 ```cpp
 vector<int> v; // 빈 벡터
@@ -283,20 +316,23 @@ pair<int, int> p = {3, 5};    // 또는 make_pair(3, 5) 라는 것도 있다
 p.first;   // 3
 p.second;  // 5
 
-// 비교: first 먼저, 같으면 second 비교
 pair<int, int> a = {1, 3};
 pair<int, int> b = {1, 5};
-// a < b → true (first 같고 second 비교)
 ```
+
+(참고) pair끼리 비교할때는 first 먼저 비교하고, 같으면 second 비교하는 식이다.
+그래서 위 a, b라는 두 pair를 비교할 때 `a < b` 는 `true`를 반환한다.
 
 ```cpp
 // vector<pair> 선언
 vector<pair<int, int>> vp;
 vp.push_back({1, 2});
-vp.emplace_back(1, 2); // 중괄호 없이도 가능
+vp.emplace_back(1, 2);
 ```
 
-### 5.2 tuple (3개 이상)
+벡터 이야기이긴 한데, `push_back()`은 객체를 만들어서 넘겨줘야 하지만 `emplace_back()`은 값만 넘겨줘도 내부적으로 객체 하나 만들어서 삽입하는 방식이라 위와 같이 사용 가능하다.
+
+### 5.2 tuple (3개 이상일 때)
 
 ```cpp
 tuple<int, int, string> t = {1, 2, "abc"};
@@ -329,7 +365,6 @@ auto [x, y] = p;
 ```
 
 ```cpp
-
 // map 순회 시 편리
 map<string, int> m;
 for (auto& [key, val] : m) {
@@ -344,17 +379,17 @@ for (auto& [key, val] : m) {
 ```cpp
 vector<int> v = {5, 2, 8, 1, 3};
 
-sort(v.begin(), v.end());           // 오름차순: 1 2 3 5 8
-sort(v.begin(), v.end(), greater<int>()); // 내림차순: 8 5 3 2 1
+sort(v.begin(), v.end());                  // 오름차순: 1 2 3 5 8
+sort(v.begin(), v.end(), greater<int>());  // 내림차순: 8 5 3 2 1
 
-// 배열 정렬
+// 일반 배열 정렬도 가능하다
 int arr[5] = {5, 2, 8, 1, 3};
 sort(arr, arr + 5);
 ```
 
 ### 6.2 커스텀 정렬 (비교 함수)
 
-#### 방법 1: 별도 함수
+#### 방법 1: cmp 함수
 
 > `cmp(a, b)`는 **"a가 b보다 앞에 와야 하면 true"**를 반환하는 함수다.
 
@@ -365,6 +400,7 @@ bool cmp(const pair<int,int>& a, const pair<int,int>& b) {
     if (a.first == b.first) return a.second < b.second; // 2차 기준
     return a.first < b.first; // 1차 기준: 오름차순
 }
+
 sort(v.begin(), v.end(), cmp);
 
 ```
@@ -390,11 +426,9 @@ stable_sort(v.begin(), v.end(), cmp);
 
 ### 7.1 선형 탐색
 
-단순 반복문으로 탐색할 수 있고, 아래와 같이 `<algorithm>` 의 `find()` 메서드를 활용할 수도 있다.
+데이터를 선형 탐색할때는 단순 반복문으로 탐색할 수 있고, `<algorithm>` 의 `find()` 메서드를 활용할 수도 있다.
+이때 메서드가 반환하는 것은 iterator!
 
-> 보통 단순 배열보다 벡터를 더 자주 사용하는데, 벡터는 `find()` 메서드를 지원하지 않는다. 따라서 `<algorithm>`의 메서드를 사용하면 된다.
-> 이때 메서드가 반환하는 것은 iterator!
->
 > -> `it - v.begin()` 으로 인덱스를 구하거나
 > -> `*it` 으로 바로 출력하거나
 
@@ -411,8 +445,8 @@ int cnt = count(v.begin(), v.end(), 5); // 5의 개수
 
 ### 7.2 이분탐색
 
-이분 탐색은 반드시 정렬된 상태에서만 사용해야 한다.
-또한 직접 구현할 수도 있지만, `<algorithm>` 헤더에 `binary_search()` 라는 함수도 있다.
+이분 탐색은 `<algorithm>`의 `binary_search()`라는 함수를 사용하면 된다.
+이때 반드시 배열이나 벡터가 정렬된 상태여야 한다.
 
 #### 내장 함수 사용
 
@@ -423,7 +457,7 @@ sort(v.begin(), v.end()); // 반드시 정렬 선행
 bool found = binary_search(v.begin(), v.end(), 5);
 ```
 
-그런데 binary_search() 는 존재 여부만 true/false 로 반환하고, 정확한 인덱스를 찾아주지는 않는다!
+그런데 `binary_search()` 는 존재 여부만 `true`/`false` 로 반환하고, 정확한 인덱스를 찾아주지는 않는다!
 
 ```cpp
 // lower_bound: target 이상인 첫 위치
@@ -453,9 +487,9 @@ while (lo < hi) {
 }
 ```
 
-## 9. `<algorithm>`
+## 8. `<algorithm>`의 다양한 함수들
 
-### 9.1 최대/최소
+### 8.1 최대/최소
 
 ```cpp
 int a = 3, b = 7;
@@ -471,7 +505,7 @@ max({1, 2, 3, 4}); // 4 (여러 개 비교 - 초기화 리스트)
 int maxIdx = max_element(v.begin(), v.end()) - v.begin();
 ```
 
-### 9.2 swap & reverse
+### 8.2 swap & reverse
 
 ```cpp
 int a = 1, b = 2;
@@ -482,7 +516,7 @@ reverse(s.begin(), s.end());           // 문자열 뒤집기
 reverse(v.begin(), v.begin() + 3);     // 앞 3개만 뒤집기
 ```
 
-### 9.3 next_permutation (순열)
+### 8.3 next_permutation (순열)
 
 ```cpp
 vector<int> v = {1, 2, 3};
@@ -497,7 +531,7 @@ do {
 // prev_permutation: 이전 순열
 ```
 
-### 9.4 unique (중복 제거)
+### 8.4 unique (중복 제거)
 
 ```cpp
 sort(v.begin(), v.end());  // 정렬 필수!
@@ -506,7 +540,7 @@ v.erase(unique(v.begin(), v.end()), v.end());
 // erase로 뒤쪽 쓰레기값 제거
 ```
 
-### 9.5 accumulate (합계)
+### 8.5 accumulate (합계)
 
 ```cpp
 #include <numeric>
@@ -514,7 +548,7 @@ int sum = accumulate(v.begin(), v.end(), 0);         // 초기값 0
 long long sum2 = accumulate(v.begin(), v.end(), 0LL); // long long 합
 ```
 
-### 9.6 fill & iota
+### 8.6 fill & iota
 
 ```cpp
 // fill: 특정 값으로 채우기
